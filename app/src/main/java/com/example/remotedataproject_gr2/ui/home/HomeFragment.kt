@@ -13,6 +13,9 @@ import com.example.remotedataproject_gr2.adapter.PostAdapter
 import com.example.remotedataproject_gr2.databinding.FragmentHomeBinding
 import com.example.remotedataproject_gr2.helpers.Helpers.provideRetrofitInstance
 import com.example.remotedataproject_gr2.model.Post
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -71,21 +74,25 @@ class HomeFragment : Fragment() {
 
 
     private fun getPosts() {
-        provideRetrofitInstance().getAllPosts().enqueue(object : Callback<List<Post>?> {
-            override fun onResponse(call: Call<List<Post>?>, response: Response<List<Post>?>) {
-                if (response.isSuccessful && response.body() != null) {
-                    listOfPosts = response.body()!!
-                    if (!listOfPosts.isNullOrEmpty()) {
-                        val postAdapter = PostAdapter(requireContext(), listOfPosts)
-                        binding.lvPost.adapter = postAdapter
+        binding.progressBar.visibility = View.VISIBLE
+            provideRetrofitInstance().getAllPosts().enqueue(object : Callback<List<Post>?> {
+                override fun onResponse(call: Call<List<Post>?>, response: Response<List<Post>?>) {
+                    binding.progressBar.visibility = View.GONE
+                    if (response.isSuccessful && response.body() != null) {
+                        listOfPosts = response.body()!!
+                        if (!listOfPosts.isNullOrEmpty()) {
+                            val postAdapter = PostAdapter(requireContext(), listOfPosts)
+                            binding.lvPost.adapter = postAdapter
+                        }
                     }
                 }
-            }
 
-            override fun onFailure(call: Call<List<Post>?>, t: Throwable) {
-                Log.d("TAG", "onFailure: ${t.message}")
-            }
-        })
+                override fun onFailure(call: Call<List<Post>?>, t: Throwable) {
+                    binding.progressBar.visibility = View.GONE
+                    Log.d("TAG", "onFailure: ${t.message}")
+                }
+            })
+
     }
 
 }
