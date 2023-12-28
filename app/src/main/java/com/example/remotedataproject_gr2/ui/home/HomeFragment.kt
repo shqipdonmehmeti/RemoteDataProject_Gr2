@@ -75,6 +75,7 @@ class HomeFragment : Fragment() {
 
     private fun getPosts() {
         binding.progressBar.visibility = View.VISIBLE
+
             provideRetrofitInstance().getAllPosts().enqueue(object : Callback<List<Post>?> {
                 override fun onResponse(call: Call<List<Post>?>, response: Response<List<Post>?>) {
                     binding.progressBar.visibility = View.GONE
